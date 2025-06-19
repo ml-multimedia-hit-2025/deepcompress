@@ -112,3 +112,7 @@ This will produce a `.pth` model file you can use for compression and decompress
 ---
 
 **Authors:** Aviv Elbaz ([aviv000](https://github.com/aviv000)), Ron Butbul ([RonButbul626](https://github.com/RonButbul626))
+
+---
+
+For more comprehensive details, troubleshooting, and advanced usage, please refer to the instruction manual (available in `.md`, `.docx`, and `.pdf` formats) located in the `instruction_manual` folder.
