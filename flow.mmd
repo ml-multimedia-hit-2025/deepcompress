@@ -1,7 +1,0 @@
-graph LR
-    A[Input Image] --> B(Resize 256x256)
-    B --> C[Encoder: Conv2D→ReLU×2]
-C --> D[Latent Space 64x64x64]
-D --> E[Decoder: TransposedConv2D→ReLU×2]
-E --> F[Sigmoid Activation]
-F --> G[Compressed Output]
