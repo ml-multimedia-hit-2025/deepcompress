@@ -5,12 +5,19 @@ from PIL import Image
 import io
 import os # For checking model path
 
-# --- Model Definition (Copied from your model.py) ---
+# --- Model Definition ---
 import torch.nn as nn
 
 class FullyConvolutionalAE(nn.Module):
-    def __init__(self, latent_channels=64): # Number of channels in the bottleneck
+    """
+    Fully Convolutional Autoencoder for image compression.
+
+    Args:
+        latent_channels (int, optional): Number of channels in the bottleneck latent space. Default is 64.
+    """
+    def __init__(self, latent_channels=64):
         super().__init__()
+        # Encoder: Downsamples input image to latent representation
         self.encoder = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=4, stride=2, padding=1),
             nn.ReLU(inplace=True),
@@ -21,6 +28,7 @@ class FullyConvolutionalAE(nn.Module):
             nn.Conv2d(128, latent_channels, kernel_size=3, stride=1, padding=1),
             nn.ReLU(inplace=True)
         )
+        # Decoder: Upsamples latent representation back to image
         self.decoder = nn.Sequential(
             nn.ConvTranspose2d(latent_channels, 128, kernel_size=3, stride=1, padding=1),
             nn.ReLU(inplace=True),
@@ -33,20 +41,37 @@ class FullyConvolutionalAE(nn.Module):
         )
 
     def forward(self, x):
+        """
+        Forward pass through the autoencoder.
+
+        Args:
+            x (torch.Tensor): Input image tensor of shape (B, 3, H, W).
+
+        Returns:
+            torch.Tensor: Reconstructed image tensor of shape (B, 3, H, W).
+        """
+        # Encode input to latent space
         latent = self.encoder(x)
+        # Decode latent to reconstruct image
         reconstructed = self.decoder(latent)
         return reconstructed
 # --- End Model Definition ---
 
 # --- Configuration ---
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-MODEL_PATH = "fcn_compression_ae.pth"  # IMPORTANT: Ensure this model exists!
-                                     # Or change to "fcn_compression_ae2.pth" if that's your file
+MODEL_PATH = "fcn_compression_ae.pth"
+
 LATENT_CHANNELS = 64 # Must match the latent_channels used during training
 
 # --- Model Loading (Cached) ---
 @st.cache_resource # Use st.cache_resource for PyTorch models
 def load_model():
+    """
+    Loads the trained Fully Convolutional Autoencoder model from disk and prepares it for inference.
+
+    Returns:
+        FullyConvolutionalAE or None: The loaded model, or None if loading fails.
+    """
     if not os.path.exists(MODEL_PATH):
         st.error(f"Model file not found: {MODEL_PATH}. Please make sure it's in the same directory as app.py.")
         return None
@@ -63,7 +88,14 @@ def load_model():
 def process_image(pil_image, model_instance, target_quality=50):
     """
     Compresses and then decompresses a PIL image using the loaded model.
-    Returns the original PIL image, the reconstructed PIL image, and bytes for download.
+
+    Args:
+        pil_image (PIL.Image): The input image to process.
+        model_instance (FullyConvolutionalAE): The loaded model instance.
+        target_quality (int, optional): JPEG quality for output image. Default is 50.
+
+    Returns:
+        tuple: (original PIL image, reconstructed PIL image, bytes for download)
     """
     if model_instance is None:
         return pil_image, None, None # Return if model failed to load
@@ -77,12 +109,14 @@ def process_image(pil_image, model_instance, target_quality=50):
     pad_h = (8 - height % 8) % 8
 
     if pad_w > 0 or pad_h > 0:
+        # Pad image with black pixels if necessary
         padded_img = Image.new(img.mode, (width + pad_w, height + pad_h), (0,0,0))
         padded_img.paste(img, (0,0))
         img_to_process_compression = padded_img
     else:
         img_to_process_compression = img
 
+    # Convert image to tensor
     img_array = np.array(img_to_process_compression, dtype=np.float32) / 255.0
     tensor = torch.FloatTensor(img_array).permute(2, 0, 1).unsqueeze(0).to(device)
 
@@ -90,9 +124,6 @@ def process_image(pil_image, model_instance, target_quality=50):
     with torch.no_grad():
         latent_tensor = model_instance.encoder(tensor)
     
-    # Latent tensor is kept in memory (no need to save to .npy for this workflow)
-    # original_size_before_padding = (width, height) # Stored as width, height
-
     # 3. Decompress (Decode)
     with torch.no_grad():
         reconstructed_padded_tensor = model_instance.decoder(latent_tensor)
