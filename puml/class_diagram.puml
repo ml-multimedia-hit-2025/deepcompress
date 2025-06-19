@@ -1,0 +1,64 @@
+@startuml
+' DeepCompress System Overview
+
+!define RECTANGLE class
+
+RECTANGLE InputImage {
+  +file: jpg/png
+}
+RECTANGLE PadAndNormalize {
+  +pad_to_div8()
+  +to_tensor()
+}
+RECTANGLE FullyConvolutionalAE {
+  +encoder()
+  +decoder()
+  +forward()
+}
+RECTANGLE LatentRepresentation {
+  +numpy/tensor
+}
+RECTANGLE OutputImage {
+  +file: jpg/png
+}
+RECTANGLE Dataset {
+  +__getitem__()
+  +__len__()
+}
+RECTANGLE CLI {
+  +compress_to_latent()
+  +decompress_from_latent()
+}
+RECTANGLE StreamlitApp {
+  +process_image()
+  +UI
+}
+
+InputImage --> PadAndNormalize : "load & preprocess"
+PadAndNormalize --> FullyConvolutionalAE : "forward (encoder)"
+FullyConvolutionalAE --> LatentRepresentation : "output latent"
+LatentRepresentation --> FullyConvolutionalAE : "input to decoder"
+FullyConvolutionalAE --> OutputImage : "reconstruct"
+OutputImage --> StreamlitApp : "display/download"
+OutputImage --> CLI : "save file"
+
+Dataset ..> FullyConvolutionalAE : "used for training"
+CLI ..> FullyConvolutionalAE : "uses for compress/decompress"
+StreamlitApp ..> FullyConvolutionalAE : "uses for process_image"
+CLI ..> Dataset : "optionally for training"
+
+note right of StreamlitApp
+  - User uploads image
+  - Image is padded, normalized
+  - Encoded to latent
+  - Decoded to image
+  - User downloads result
+end note
+
+note right of CLI
+  - User runs compress/decompress
+  - Handles file I/O
+  - Uses model for encoding/decoding
+end note
+
+@enduml 

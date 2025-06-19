@@ -1,0 +1,27 @@
+@startuml
+' DeepCompress Use Case Diagram
+
+actor User
+
+rectangle "DeepCompress System" {
+  rectangle "Streamlit Web App" as WebApp {
+    User -- (Upload Image)
+    (Upload Image) --> (Compress Image)
+    (Compress Image) --> (Decompress Image)
+    (Decompress Image) --> (Download Image)
+    User -- (Download Image)
+  }
+  rectangle "Command Line Interface (CLI)" as CLI {
+    User -- (Compress Image) : "run compress.py compress"
+    User -- (Decompress Image) : "run compress.py decompress"
+  }
+  rectangle "Model Training" as Training {
+    User -- (Train Model)
+    (Train Model) --> (Save Model)
+  }
+}
+
+(Compress Image) .> (Decompress Image) : <<include>>
+(Compress Image) .> (Train Model) : <<extend>>
+
+@enduml 

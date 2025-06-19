@@ -1,4 +1,9 @@
-# File 3: train.py (Training Script)
+"""
+train.py
+
+Script for training a compression autoencoder on a custom image dataset using PyTorch.
+Handles dataset loading, model training, and saving the trained model.
+"""
 import os
 import time
 import numpy as np
@@ -9,6 +14,10 @@ from dataset import ImageCompressionDataset
 from model import CompressionAE
 
 def train_model():
+    """
+    Trains the CompressionAE model on the ImageCompressionDataset.
+    Loads data, runs the training loop, and saves the trained model to disk.
+    """
     # Configuration
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     batch_size = 32
