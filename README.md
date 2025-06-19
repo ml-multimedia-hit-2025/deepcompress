@@ -84,7 +84,7 @@ You can train the FCN model using CIFAR-10 or your own dataset:
 This will produce a `.pth` model file you can use for compression and decompression.
 
 ## Requirements
-- Python 3.7+
+- Python 3.8 or higher
 - See `requirements.txt` for all dependencies (PyTorch, Streamlit, Pillow, numpy, etc.)
 
 ## Notes

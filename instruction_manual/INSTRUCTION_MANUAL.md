@@ -27,7 +27,7 @@ DeepCompress is a toolkit for compressing and decompressing images using a Fully
 - Pretrained model available (via Git LFS).
 
 ## 3. System Requirements
-- Python 3.7 or higher
+- Python 3.8 or higher
 - pip (Python package manager)
 - Git and Git LFS (for pretrained model)
 - Supported OS: Windows, macOS, Linux
@@ -50,7 +50,7 @@ git lfs pull
 ```
 
 ### 4.3. Install Python Dependencies
-It is recommended to use a virtual environment:
+It is recommended to use a virtual environment with Python 3.8+:
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
