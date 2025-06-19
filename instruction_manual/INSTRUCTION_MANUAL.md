@@ -53,7 +53,25 @@ git lfs pull
 It is recommended to use a virtual environment with Python 3.8+:
 ```bash
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+If the above command does not work, remove the created `venv` folder and run:
+
+```bash
+python -m venv venv --symlinks
+```
+
+On Windows, activate with:
+```bash
+venv\Scripts\activate
+```
+On macOS/Linux, activate with:
+```bash
+source venv/bin/activate
+```
+
+Then install dependencies:
+```bash
 pip install -r requirements.txt
 ```
 
