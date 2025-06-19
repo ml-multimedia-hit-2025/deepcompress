@@ -36,7 +36,7 @@ DeepCompress is a toolkit for compressing and decompressing images using a Fully
 ## 4. Installation
 ### 4.1. Clone the Repository
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/ml-multimedia-hit-2025/deepcompress.git
 cd deepcompress
 ```
 

@@ -8,7 +8,7 @@ This project provides tools for compressing and decompressing images using a Ful
 
 ```bash
 # Clone this repository
-git clone <your-repo-url>
+git clone https://github.com/ml-multimedia-hit-2025/deepcompress.git
 cd deepcompress
 ```
 
